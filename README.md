@@ -68,3 +68,61 @@ pnpm test
 - Grafana Dashboard: http://localhost:3333
 - Prometheus: http://localhost:9090
 
+## API Documentation
+
+### Available Endpoints
+
+All endpoints are prefixed with `/api/v1/menu`
+
+### Create Menu
+
+Creates a new menu item. Optionally specify a `relatedId` to create a submenu.
+
+```bash
+# Create main menu
+curl -X POST http://localhost:8000/api/v1/menu \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Lunch Menu"}'
+
+# Create submenu
+curl -X POST http://localhost:8000/api/v1/menu \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Appetizers", "relatedId": "menu-id-here"}'
+```
+
+### Delete Menu
+
+Deletes a menu and all its submenus.
+
+```bash
+curl -X DELETE http://localhost:8000/api/v1/menu/menu-id-here
+```
+
+### Fetch All Menus
+
+Retrieves all menus with their hierarchical structure.
+
+```bash
+curl http://localhost:8000/api/v1/menu
+```
+
+Response example:
+```json
+[
+  {
+    "id": "menu-1",
+    "name": "Lunch Menu",
+    "submenus": [
+      {
+        "id": "submenu-1",
+        "name": "Appetizers"
+      },
+      {
+        "id": "submenu-2",
+        "name": "Main Courses"
+      }
+    ]
+  }
+]
+```
+
