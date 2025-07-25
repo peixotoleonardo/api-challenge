@@ -59,11 +59,20 @@ export class MenuMongoRepository implements IMenuRepository {
               const buildTree = (parentId) => {
                 return items
                   .filter(item => item.related_id && item.related_id.toString() === parentId.toString())
-                  .map(item => ({
-                    id: item._id,
-                    name: item.name,
-                    submenus: buildTree(item._id)
-                  }))
+                  .map(item => {
+                    const submenus = buildTree(item._id)
+
+                    const result = {
+                      id: item._id,
+                      name: item.name,
+                    }
+
+                    if (submenus.length) {
+                      result.submenus = submenus
+                    }
+
+                    return result
+                  })
                   .filter(item => item !== null);
               };
               
