@@ -68,6 +68,20 @@ pnpm test
 - Grafana Dashboard: http://localhost:3333
 - Prometheus: http://localhost:9090
 
+## Load Test
+
+### Install k6
+
+To install `k6` follow the steps on the [documentation](https://grafana.com/docs/k6/latest/set-up/install-k6/)
+
+### Run Load Test
+
+After install k6, execute the command on terminal.
+
+```bash
+k6 run load-test.js                                                         
+```
+
 ## API Documentation
 
 ### Available Endpoints

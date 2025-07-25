@@ -78,6 +78,9 @@ importers:
       jest:
         specifier: ^30.0.5
         version: 30.0.5(@types/node@17.0.45)(ts-node@10.9.2(@types/node@17.0.45)(typescript@4.9.5))
+      k6:
+        specifier: ^0.0.0
+        version: 0.0.0
       nodemon:
         specifier: ^2.0.15
         version: 2.0.22
@@ -1994,6 +1997,9 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  k6@0.0.0:
+    resolution: {integrity: sha512-GAQSWayS2+LjbH5bkRi+pMPYyP1JSp7o+4j58ANZ762N/RH/SdlAT3CHHztnn8s/xgg8kYNM24Gd2IPo9b5W+g==}
 
   kareem@2.5.1:
     resolution: {integrity: sha512-7jFxRVm+jD+rkq3kY0iZDJfsO2/t4BBPeEb2qKn2lR/9KhuksYk5hxzfRYWMPV8P/x2d0kHD306YyWLzjjH+uA==}
@@ -5499,6 +5505,8 @@ snapshots:
   json-stable-stringify-without-jsonify@1.0.1: {}
 
   json5@2.2.3: {}
+
+  k6@0.0.0: {}
 
   kareem@2.5.1: {}
 
