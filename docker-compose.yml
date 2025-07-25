@@ -1,0 +1,52 @@
+services:
+  mongo:
+    image: mongodb/mongodb-community-server:8.0.12-ubi9
+    restart: on-failure
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - 27017:27017
+    
+  prometheus:
+    image: prom/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./.docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: on-failure
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./.docker/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./.docker/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./.docker/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - 3333:3000
+
+  app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    restart: on-failure
+    env_file:
+      - .env
+    volumes:
+      - .env:/app/.env
+    depends_on:
+      - mongo
+    ports:
+      - ${PORT}:${PORT}
+
+volumes:
+  mongodb:
+  grafana:

@@ -1,28 +1,38 @@
-import express from 'express'
-import * as dotenv from 'dotenv'
-dotenv.config()
-import mongoose from 'mongoose'
+import express from 'express';
+import mongoose from 'mongoose';
+import promMid from 'express-prometheus-middleware';
 
-import userRoutes from './routes/user'
+import { createLogger } from '@api/modules/logger/logger.factory';
+import { createAppConfig, createMongoConfig } from '@api/modules/config';
 
-const HOST = process.env.HOST || 'https://localhost'
-const PORT = process.env.PORT || 8000
-const LOGMSG = '⚡️[Paketá Credito Live-Coding BoilerPlate]:'
+import { MenuModule } from '@api/modules/menu/menu.module';
+import { errorHandler } from '@api/modules/common/middlewares/error.middleware';
 
-mongoose.connect(
-    process.env.MONGO_URL || 'mongodb://localhost:27017/local',
-    {},
-    err => {
-        const msg = err
-            ? `${LOGMSG} Failed to connect to MongoDB: ${err}`
-            : `${LOGMSG} MongoDB connection established successfully`
-        console.log(msg)
-    },
-)
+mongoose.set('strictQuery', false);
 
-const app = express()
-app.use(express.json())
-app.use('/user', userRoutes)
-app.listen(PORT, () => {
-    console.log(`${LOGMSG} Server is running at ${HOST}:${PORT}`)
-})
+(async () => {
+  const logger = createLogger();
+
+  const appConfig = createAppConfig();
+  const mongoConfig = createMongoConfig();
+
+  await mongoose.connect(mongoConfig.url);
+
+  const app = express();
+
+  app.use(promMid({
+    metricsPath: '/metrics',
+    collectDefaultMetrics: true,
+    requestDurationBuckets: [0.1, 0.5, 1, 1.5],
+    requestLengthBuckets: [512, 1024, 5120, 10240, 51200, 102400],
+    responseLengthBuckets: [512, 1024, 5120, 10240, 51200, 102400],
+  }));
+
+  app.use(express.json());
+
+  MenuModule.register(app);
+
+  app.use(errorHandler(logger));
+
+  app.listen(appConfig.port, () => logger.info(`server is running at ${appConfig.port}`));
+})();

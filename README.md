@@ -1,37 +1,70 @@
-# Desafio Backend
+# Menu API
 
-## Objetivo
-O objetivo deste desafio é avaliar os seus conhecimentos em arquitetura de código, raciocínio lógico, *clean code* e modelagem de dados.
+A RESTful API service for managing restaurant menus, built with modern technologies and best practices.
 
-## Etapas
+## Technology Stack
 
-### Etapa 1 - Ambientação
+- **Node.js** - Runtime environment
+- **TypeScript** - Programming language
+- **Express.js** - Web framework
+- **MongoDB** - Database
+- **Joi** - Data validation
+- **Pino** - Logging
+- **Jest** - Testing
+- **Docker** - Containerization
+- **Prometheus & Grafana** - Monitoring
 
-Clone este repositório, leia o [guia de contribuição](./contributing.md), estude a arquitetura apresentada deste projeto e realize alguns testes nos endpoints existentes para se ambientar com o código.
+## Getting Started
 
-1. Se você optou por realizar o **Live-Coding**, certifique-se que o *backend-boiler-plate* esteja funcional no seu ambiente, pois você utilizá-lo-á na próxima etapa.
-2. Se você optou por realizar o **desafio sozinho**, você receberá um link com intruções para o mesmo. Você deve implementar os requisitos solicitados neste documento utilizando o código do *backend-boiler-plate* deste repositório, ou seja, você irá **incrementar/adicionar as funcionalidades solicitadas** ao *boiler-plate*.
+### Prerequisites
 
-Independete da sua escolha, marcaremos um horário para que você possa seguir para a próxima etapa: a **entrevista**.
+- Docker and Docker Compose
+- pnpm (for local development)
 
-### Etapa 2 - Entrevista
+### Running with Docker Compose
 
-1. Se você optou por realizar o **Live-Coding**, você receberá o desafio no início desta entrevista e terá aproximadamente *uma hora e meia* para concluí-lo.
-2. Se você optou por realizar o **desafio sozinho**, este será o momento em que revisaremos o mesmo. Você será questionado sobre os conceitos aplicados durante o desafio. Esta entrevista deve demorar no máximo *uma hora*.
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd api-challenge
+```
 
-### Etapa 3 - Quadro Branco
+2. Create a `.env` file in the root directory with the following variables:
+```
+PORT=8000
+LOG_LEVEL=info
+DATABASE_USERNAME=your_username
+DATABASE_PASSWORD=your_password
+```
 
-Nesta etapa, também conhecida como Design System Interview, você será convidado à falar um pouco sobre suas experiências passadas com design de soluções e arquitetura de sistemas. Também será apresentado um problema no qual candidato deverá propor o design da solução.
+3. Start the application and its dependencies:
+```bash
+docker compose up -d
+```
 
-Caso nunca tenha feito este tipo de entrevista, te aconselhamos a dar uma olhada no Youtube (Recomendação: [Exponent - System Design Interview Prep](https://www.youtube.com/channel/UCjm_qVkCPjOVDz9BWjNqO9A))
+This will start:
+- The API application on port specified in `.env`
+- MongoDB on port 27017
+- Prometheus for metrics collection
+- Grafana dashboard on port 3333 (credentials: admin/admin)
 
-Recomendamos também tire um tempo para relembrar alguns conceitos e se preparar melhor para a entrevista.
-Material Recomendado: 
-- [System Desgin Prime](https://github.com/donnemartin/system-design-primer)
-- [A Dev' Story](https://www.youtube.com/channel/UCGjZSsyZY1hce8SsGV1_IHg)
-- [Introduction to AWS Lambda & Serverless Applications](https://www.youtube.com/watch?v=EBSdyoO3goc)
-- [Designing Serverless Application on AWS](https://www.youtube.com/watch?v=s7nXSGleGwY)
+### Development
 
-​
-### Final
-Após a avaliação, os seus resultados serão encaminhados de volta para a equipe técnica, e eles irão dar continuidade ao seu processo seletivo juntamente com o RH da Paketá.
+To run the application locally:
+
+```bash
+pnpm install
+pnpm start
+```
+
+### Testing
+
+```bash
+pnpm test
+```
+
+## Monitoring
+
+- Grafana Dashboard: http://localhost:3333
+- Prometheus: http://localhost:9090
+

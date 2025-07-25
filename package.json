@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.ts"
+    "test": "jest",
+    "build": "tsc -p ./tsconfig.build.json",
+    "start": "dotenvx run -- nodemon src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -16,19 +17,70 @@
   "bugs": {
     "url": "https://github.com/paketacredito/live-coding-boiler-plate/issues"
   },
+  "_moduleAliases": {
+    "@api": "dist/src"
+  },
   "homepage": "https://github.com/paketacredito/live-coding-boiler-plate#readme",
   "devDependencies": {
+    "@jest/globals": "^30.0.5",
     "@types/express": "^4.17.13",
+    "@types/express-prometheus-middleware": "^1.2.3",
+    "@types/jest": "^30.0.0",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^17.0.19",
+    "jest": "^30.0.5",
     "nodemon": "^2.0.15",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.5.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.48.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "express-async-handler": "^1.2.0",
+    "express-prometheus-middleware": "^1.2.0",
+    "http-status-codes": "^2.3.0",
+    "joi": "^17.13.3",
+    "lodash": "^4.17.21",
+    "module-alias": "^2.2.3",
     "mongoose": "^6.2.2",
+    "pino": "^9.7.0",
     "yup": "^0.32.11"
   },
-  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971"
+  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971",
+  "nodemonConfig": {
+    "delay": 5000,
+    "execMap": {
+      "ts": "ts-node"
+    },
+    "ext": "ts",
+    "watch": [
+      "src"
+    ]
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "@api/(.*)$": "<rootDir>/src/$1"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src/"
+    ]
+  }
 }
