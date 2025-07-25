@@ -1,5 +1,5 @@
 {
-  "name": "live-coding-boiler-plate",
+  "name": "api-challenge",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -9,19 +9,11 @@
     "lint": "eslint . --fix",
     "start": "dotenvx run -- nodemon src/index.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/paketacredito/live-coding-boiler-plate.git"
-  },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/paketacredito/live-coding-boiler-plate/issues"
-  },
   "_moduleAliases": {
     "@api": "dist/src"
   },
-  "homepage": "https://github.com/paketacredito/live-coding-boiler-plate#readme",
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@jest/globals": "^30.0.5",
