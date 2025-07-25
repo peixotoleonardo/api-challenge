@@ -1,7 +1,7 @@
 import { Menu } from '@api/modules/menu/core/menu.entity';
 import { FetchMenuResult, IMenuRepository } from '@api/modules/menu/core/menu.repository';
 
-import { IMenuDocument, MenuDocument } from '@api/modules/menu/adapters/mongo/menu.document';
+import { MenuDocument } from '@api/modules/menu/adapters/mongo/menu.document';
 
 export class MenuMongoRepository implements IMenuRepository {
   async create(entity: Menu): Promise<string> {
@@ -23,33 +23,60 @@ export class MenuMongoRepository implements IMenuRepository {
   }
 
   async fetch(): Promise<FetchMenuResult[]> {
-    const documents = await MenuDocument.find();
-
-    const allMenus = documents
-    const mainMenus = documents.filter(document => !document.related_id);
-
-    const buildMenuTree = (parentId: string): any[] => {
-      const children = allMenus.filter(menu => menu.related_id && menu.related_id.toString() === parentId);
-
-      return children.map((child: IMenuDocument) => {
-        const submenus = buildMenuTree(child._id.toString());
-
-        return {
-          id: child._id.toString(),
-          name: child.name,
-          ...(submenus.length ? { submenus } : {})
-        };
-      });
-    };
-    
-    return mainMenus.map(menu => {
-      const submenus = buildMenuTree(menu._id.toString());
-
-      return {
-        id: menu._id.toString(),
-        name: menu.name,
-        ...(submenus.length ? { submenus } : {}),
-      };
-    });
+    return MenuDocument.aggregate([
+      {
+        $match: {
+          related_id: null
+        }
+      },
+      {
+        $graphLookup: {
+          from: "menus",
+          startWith: "$_id",
+          connectFromField: "_id",
+          connectToField: "related_id",
+          as: "submenus",
+          depthField: "level"
+        }
+      },
+      {
+        $addFields: {
+          "submenus": {
+            $function: {
+              body: `function(root, items) {
+              const buildTree = (parentId) => {
+                return items
+                  .filter(item => item.related_id && item.related_id.toString() === parentId.toString())
+                  .map(item => ({
+                    id: item._id,
+                    name: item.name,
+                    submenus: buildTree(item._id)
+                  }))
+                  .filter(item => item !== null);
+              };
+              
+              return buildTree(root);
+            }`,
+              args: ["$_id", "$submenus"],
+              lang: "js"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          id: { $toString: "$_id" },
+          name: 1,
+          submenus: {
+            $cond: {
+              if: { $gt: [{ $size: "$submenus" }, 0] },
+              then: "$submenus",
+              else: "$$REMOVE"
+            }
+          }
+        }
+      }
+    ]);
   }
 }
