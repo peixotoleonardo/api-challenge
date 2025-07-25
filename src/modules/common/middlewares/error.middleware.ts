@@ -30,7 +30,7 @@ export const errorHandler =
     const message = err.message || 'internal error';
 
     const status =
-      err?.code || err?.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+      err?.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
 
     response.status(status).json({ message });
   };
