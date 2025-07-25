@@ -2,15 +2,26 @@ import { Menu } from '@api/modules/menu/core/menu.entity';
 import { FetchMenuResult, IMenuRepository } from '@api/modules/menu/core/menu.repository';
 
 import { MenuDocument } from '@api/modules/menu/adapters/mongo/menu.document';
+import { NameAlreadyExistsError } from '@api/modules/menu/core/error/name-already-exists.error';
+
+const DUPLICATE_ERROR_CODE = 11000;
 
 export class MenuMongoRepository implements IMenuRepository {
   async create(entity: Menu): Promise<string> {
-    const { id } = await MenuDocument.create({
-      name: entity.name,
-      related_id: entity.relatedId,
-    });
+    try {
+      const { id } = await MenuDocument.create({
+        name: entity.name,
+        related_id: entity.relatedId,
+      });
 
-    return id;
+      return id;
+    } catch (error) {
+      if ((error as any).code === DUPLICATE_ERROR_CODE) {
+        throw new NameAlreadyExistsError(entity.name)
+      }
+
+      throw error
+    }
   }
 
   async delete(id: string): Promise<void> {

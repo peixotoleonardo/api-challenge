@@ -7,7 +7,7 @@ export interface IMenuDocument {
 }
 
 const schema = new Schema<IMenuDocument>({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   related_id: { type: Schema.Types.ObjectId, required: false },
 });
 
