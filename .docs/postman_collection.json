@@ -1,0 +1,180 @@
+{
+	"info": {
+		"_postman_id": "5abc1b5e-136c-460c-a55a-47e1a6e1f43e",
+		"name": "Menu API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3814570",
+		"_collection_link": "https://winter-astronaut-717349.postman.co/workspace/New-Team-Workspace~1c7cb277-a917-4010-8977-826a300d2596/collection/3814570-5abc1b5e-136c-460c-a55a-47e1a6e1f43e?action=share&source=collection_link&creator=3814570"
+	},
+	"item": [
+		{
+			"name": "Fetch Menu",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/menu",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Root Item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return id', function () {",
+							"    const jsonData = pm.response.json();",
+							"",
+							"    pm.expect(jsonData.id).to.be.a('string');",
+							"",
+							"    pm.collectionVariables.set('item_id', jsonData.id);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{$guid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/menu",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Item and Subitens",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/menu/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"menu",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{item_id}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sub Item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return id', function () {",
+							"    const jsonData = pm.response.json();",
+							"",
+							"    pm.collectionVariables.set('rootItemId', jsonData.id);",
+							"    ",
+							"    pm.expect(jsonData.id).to.be.a('string');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{$guid}}\",\n    \"relatedId\": \"{{item_id}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/menu",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"menu"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "item_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "rootItemId",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
