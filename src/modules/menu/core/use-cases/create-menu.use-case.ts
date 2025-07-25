@@ -11,10 +11,13 @@ export interface CreatedMenuOutput {
 }
 
 export class CreateMenuUseCase {
-  constructor(private readonly repository: IMenuRepository) { }
+  constructor(private readonly repository: IMenuRepository) {}
 
   async execute(input: Readonly<CreateMenuInput>): Promise<CreatedMenuOutput> {
-    const entity = Menu.create({ name: input.name, relatedId: input.relatedId });
+    const entity = Menu.create({
+      name: input.name,
+      relatedId: input.relatedId,
+    });
 
     return {
       id: await this.repository.create(entity),

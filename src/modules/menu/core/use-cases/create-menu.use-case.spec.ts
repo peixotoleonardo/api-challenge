@@ -1,7 +1,10 @@
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 
 import { IMenuRepository } from '@api/modules/menu/core/menu.repository';
-import { CreateMenuInput, CreateMenuUseCase } from '@api/modules/menu/core/use-cases/create-menu.use-case';
+import {
+  CreateMenuInput,
+  CreateMenuUseCase,
+} from '@api/modules/menu/core/use-cases/create-menu.use-case';
 
 describe('CreateMenuUseCase', () => {
   let useCase: CreateMenuUseCase;
@@ -27,7 +30,9 @@ describe('CreateMenuUseCase', () => {
 
       expect(result).toEqual({ id: expectedId });
       expect(mockRepository.create).toHaveBeenCalledTimes(1);
-      expect(mockRepository.create).toHaveBeenCalledWith(expect.objectContaining({ props: { name: 'Test Menu' } }));
+      expect(mockRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ props: { name: 'Test Menu' } }),
+      );
     });
   });
 });

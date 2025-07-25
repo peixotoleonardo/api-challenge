@@ -12,7 +12,7 @@ export class Menu {
     return this.props.relatedId;
   }
 
-  private constructor(private props: MenuProperty) { }
+  private constructor(private props: MenuProperty) {}
 
   static create(props: MenuProperty) {
     return new this({ ...props });

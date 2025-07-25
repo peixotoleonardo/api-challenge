@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { FetchMenuQuery } from '@api/modules/menu/core/queries/fetch-menu.query';
 import { CreateMenuUseCase } from '@api/modules/menu/core/use-cases/create-menu.use-case';
 import { DeleteMenuUseCase } from '@api/modules/menu/core/use-cases/delete-menu.use-case';
-import { createMenuHandler, deleteMenuHandler, fetchMenuHandler } from '@api/modules/menu/adapters/http/in/menu';
+import {
+  createMenuHandler,
+  deleteMenuHandler,
+  fetchMenuHandler,
+} from '@api/modules/menu/adapters/http/in/menu';
 
 describe('Menu Handlers', () => {
   let mockRequest: Partial<Request>;
@@ -37,7 +43,10 @@ describe('Menu Handlers', () => {
       mockRequest.body = menuData;
       mockCreateMenuUseCase.execute.mockResolvedValue(expectedOutput);
 
-      await createMenuHandler(mockCreateMenuUseCase)(mockRequest as Request, mockResponse as Response);
+      await createMenuHandler(mockCreateMenuUseCase)(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
 
       expect(mockCreateMenuUseCase.execute).toHaveBeenCalledWith(menuData);
       expect(mockStatus).toHaveBeenCalledWith(StatusCodes.CREATED);
@@ -50,7 +59,10 @@ describe('Menu Handlers', () => {
       mockCreateMenuUseCase.execute.mockRejectedValue(error);
 
       await expect(
-        createMenuHandler(mockCreateMenuUseCase)(mockRequest as Request, mockResponse as Response)
+        createMenuHandler(mockCreateMenuUseCase)(
+          mockRequest as Request,
+          mockResponse as Response,
+        ),
       ).rejects.toThrow('Creation failed');
     });
   });
@@ -68,7 +80,10 @@ describe('Menu Handlers', () => {
       mockRequest.params = { id: '123' };
       mockDeleteMenuUseCase.execute.mockResolvedValue(undefined);
 
-      await deleteMenuHandler(mockDeleteMenuUseCase)(mockRequest as Request, mockResponse as Response);
+      await deleteMenuHandler(mockDeleteMenuUseCase)(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
 
       expect(mockDeleteMenuUseCase.execute).toHaveBeenCalledWith('123');
       expect(mockStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
@@ -81,7 +96,10 @@ describe('Menu Handlers', () => {
       mockDeleteMenuUseCase.execute.mockRejectedValue(error);
 
       await expect(
-        deleteMenuHandler(mockDeleteMenuUseCase)(mockRequest as Request, mockResponse as Response)
+        deleteMenuHandler(mockDeleteMenuUseCase)(
+          mockRequest as Request,
+          mockResponse as Response,
+        ),
       ).rejects.toThrow('Deletion failed');
     });
   });
@@ -102,7 +120,10 @@ describe('Menu Handlers', () => {
       ];
       mockFetchMenuQuery.execute.mockResolvedValue(expectedMenus);
 
-      await fetchMenuHandler(mockFetchMenuQuery)(mockRequest as Request, mockResponse as Response);
+      await fetchMenuHandler(mockFetchMenuQuery)(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
 
       expect(mockFetchMenuQuery.execute).toHaveBeenCalled();
       expect(mockStatus).toHaveBeenCalledWith(StatusCodes.OK);
@@ -114,7 +135,10 @@ describe('Menu Handlers', () => {
       mockFetchMenuQuery.execute.mockRejectedValue(error);
 
       await expect(
-        fetchMenuHandler(mockFetchMenuQuery)(mockRequest as Request, mockResponse as Response)
+        fetchMenuHandler(mockFetchMenuQuery)(
+          mockRequest as Request,
+          mockResponse as Response,
+        ),
       ).rejects.toThrow('Fetch failed');
     });
   });

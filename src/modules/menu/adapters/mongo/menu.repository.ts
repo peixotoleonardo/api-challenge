@@ -1,5 +1,8 @@
 import { Menu } from '@api/modules/menu/core/menu.entity';
-import { FetchMenuResult, IMenuRepository } from '@api/modules/menu/core/menu.repository';
+import {
+  FetchMenuResult,
+  IMenuRepository,
+} from '@api/modules/menu/core/menu.repository';
 
 import { MenuDocument } from '@api/modules/menu/adapters/mongo/menu.document';
 import { NameAlreadyExistsError } from '@api/modules/menu/core/error/name-already-exists.error';
@@ -16,20 +19,18 @@ export class MenuMongoRepository implements IMenuRepository {
 
       return id;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((error as any).code === DUPLICATE_ERROR_CODE) {
-        throw new NameAlreadyExistsError(entity.name)
+        throw new NameAlreadyExistsError(entity.name);
       }
 
-      throw error
+      throw error;
     }
   }
 
   async delete(id: string): Promise<void> {
     await MenuDocument.deleteMany({
-      $or: [
-        { _id: id },
-        { related_id: id }
-      ]
+      $or: [{ _id: id }, { related_id: id }],
     });
   }
 
@@ -37,22 +38,22 @@ export class MenuMongoRepository implements IMenuRepository {
     return MenuDocument.aggregate([
       {
         $match: {
-          related_id: null
-        }
+          related_id: null,
+        },
       },
       {
         $graphLookup: {
-          from: "menus",
-          startWith: "$_id",
-          connectFromField: "_id",
-          connectToField: "related_id",
-          as: "submenus",
-          depthField: "level"
-        }
+          from: 'menus',
+          startWith: '$_id',
+          connectFromField: '_id',
+          connectToField: 'related_id',
+          as: 'submenus',
+          depthField: 'level',
+        },
       },
       {
         $addFields: {
-          "submenus": {
+          submenus: {
             $function: {
               body: `function(root, items) {
               const buildTree = (parentId) => {
@@ -68,26 +69,26 @@ export class MenuMongoRepository implements IMenuRepository {
               
               return buildTree(root);
             }`,
-              args: ["$_id", "$submenus"],
-              lang: "js"
-            }
-          }
-        }
+              args: ['$_id', '$submenus'],
+              lang: 'js',
+            },
+          },
+        },
       },
       {
         $project: {
           _id: 0,
-          id: { $toString: "$_id" },
+          id: { $toString: '$_id' },
           name: 1,
           submenus: {
             $cond: {
-              if: { $gt: [{ $size: "$submenus" }, 0] },
-              then: "$submenus",
-              else: "$$REMOVE"
-            }
-          }
-        }
-      }
+              if: { $gt: [{ $size: '$submenus' }, 0] },
+              then: '$submenus',
+              else: '$$REMOVE',
+            },
+          },
+        },
+      },
     ]);
   }
 }

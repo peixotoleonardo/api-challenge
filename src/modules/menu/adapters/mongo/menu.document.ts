@@ -14,4 +14,3 @@ const schema = new Schema<IMenuDocument>({
 schema.index({ related_id: 1 });
 
 export const MenuDocument = model<IMenuDocument>('menu', schema, 'menus');
- 
