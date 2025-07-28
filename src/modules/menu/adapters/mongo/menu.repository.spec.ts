@@ -49,29 +49,20 @@ describe('MenuMongoRepository', () => {
 
   describe('fetch', () => {
     it('should return empty array when no menus exist', async () => {
-      (MenuDocument.find as jest.Mock).mockResolvedValueOnce([]);
+      (MenuDocument.aggregate as jest.Mock).mockResolvedValueOnce([]);
 
       const result = await repository.fetch();
 
       expect(result).toEqual([]);
-      expect(MenuDocument.find).toHaveBeenCalled();
+      expect(MenuDocument.aggregate).toHaveBeenCalled();
     });
 
     it('should return structured menu tree', async () => {
       const mockMenus = [
-        { _id: '1', name: 'Menu 1', related_id: null },
-        { _id: '2', name: 'Submenu 1', related_id: '1' },
-        { _id: '3', name: 'Submenu 2', related_id: '1' },
-        { _id: '4', name: 'Menu 2', related_id: null },
-      ].map((menu) => ({
-        ...menu,
-        _id: { toString: () => menu._id },
-        related_id: menu.related_id
-          ? { toString: () => menu.related_id }
-          : null,
-      }));
+        { id: '1', name: 'Menu 1', submenus: [{ id: '2', name: 'Submenu 1' }, { id: '3', name: 'Submenu 2' }] },
+      ];
 
-      (MenuDocument.find as jest.Mock).mockResolvedValueOnce(mockMenus);
+      (MenuDocument.aggregate as jest.Mock).mockResolvedValueOnce(mockMenus);
 
       const result = await repository.fetch();
 
@@ -84,12 +75,71 @@ describe('MenuMongoRepository', () => {
             { id: '3', name: 'Submenu 2' },
           ],
         },
-        {
-          id: '4',
-          name: 'Menu 2',
-        },
       ]);
-      expect(MenuDocument.find).toHaveBeenCalled();
+
+      expect(MenuDocument.aggregate).toHaveBeenNthCalledWith(1, [{
+        $match: {
+          related_id: null,
+        },
+      },
+      {
+        $graphLookup: {
+          from: 'menus',
+          startWith: '$_id',
+          connectFromField: '_id',
+          connectToField: 'related_id',
+          as: 'submenus',
+          depthField: 'level',
+        },
+      },
+      {
+        $addFields: {
+          submenus: {
+            $function: {
+              body: `function(root, items) {
+              const buildTree = (parentId) => {
+                return items
+                  .filter(item => item.related_id && item.related_id.toString() === parentId.toString())
+                  .map(item => {
+                    const submenus = buildTree(item._id)
+
+                    const result = {
+                      id: item._id,
+                      name: item.name,
+                    }
+
+                    if (submenus.length) {
+                      result.submenus = submenus
+                    }
+
+                    return result
+                  })
+                  .filter(item => item !== null);
+              };
+              
+              return buildTree(root);
+            }`,
+              args: ['$_id', '$submenus'],
+              lang: 'js',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: { $toString: '$_id' },
+          name: 1,
+          submenus: {
+            $cond: {
+              if: { $gt: [{ $size: '$submenus' }, 0] },
+              then: '$submenus',
+              else: '$$REMOVE',
+            },
+          },
+        },
+      },
+      ]);
     });
   });
 });
